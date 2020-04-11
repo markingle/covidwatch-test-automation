@@ -12,19 +12,26 @@ class CovidWatchHomePage:
 
     def __init__(self, driver):
         self.driver = driver
+
         self.accept_button = WebDriverWait(self.driver, 5).until(
             EC.visibility_of_element_located((
                 MobileBy.ID, "com.android.packageinstaller:id/permission_allow_button"
             )))
 
     def accept_location_permissions(self):
+
         self.accept_button.click()
 
-        # Now that we have accepted permissions, make sure start/clear buttons are available
+        self.settings_button = WebDriverWait(self.driver, 5).until(
+            EC.visibility_of_element_located((
+                MobileBy.ID, "org.covidwatch.tags.android:id/navigation_user_profile"
+            )))
+
         self.start_button = WebDriverWait(self.driver, 5).until(
             EC.visibility_of_element_located((
                 MobileBy.ID, "org.covidwatch.tags.android:id/start_logging"
             )))
+
         self.clear_button = WebDriverWait(self.driver, 5).until(
             EC.visibility_of_element_located((
                 MobileBy.ID, "org.covidwatch.tags.android:id/clear"
@@ -54,3 +61,7 @@ class CovidWatchHomePage:
             EC.visibility_of_element_located((
                 MobileBy.ID, "org.covidwatch.tags.android:id/start_logging"
             )))
+
+    def goto_settings(self):
+
+        self.settings_button.click()
