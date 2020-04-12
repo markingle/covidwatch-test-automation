@@ -10,3 +10,6 @@ gen
 
 # Pytest files
 ./tests/.pytest_cache
+
+# User files
+./tests/user_configs

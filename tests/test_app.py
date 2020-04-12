@@ -8,27 +8,33 @@ from pages.home import CovidWatchHomePage
 from pages.settings import CovidWatchSettingsPage
 
 
-def test_covid_app(driver):
+def test_single_device(drivers):
 
-    # Home page testing
-    home_page = CovidWatchHomePage(driver)
-    home_page.accept_location_permissions()
-    home_page.start_logging()
-    # TODO: make sure logging has started properly
-    home_page.clear_logging()
-    # TODO: make sure ids are cleared
-    home_page.stop_logging()
-    # TODO: make sure we are not logging anymore
-    home_page.goto_settings()
-    # TODO: make sure transitioned to settings
+    # TODO: convert to parallel test with pass/fail for each device
+    for driver in drivers.values():
 
-    # Settings page testing
-    settings_page = CovidWatchSettingsPage(driver)
-    settings_page.yes_notify()
-    # TODO: make sure we are notifying
-    settings_page.no_notify()
-    # TODO: make sure wwe are not notifying
-    settings_page.goto_seen_tags()
-    # TODO: Make sure back on seen tags
+        # Home page testing
+        home_page = CovidWatchHomePage(driver)
+        home_page.accept_location_permissions()
+        assert home_page.past_permissions_state() == 0
+        home_page.start_logging()
+        assert home_page.in_logging_state() is True
+        home_page.clear_logging()
+        assert home_page.no_ids_present() is True
+        home_page.stop_logging()
+        assert home_page.in_default_state() is True
+        home_page.goto_settings()
+        assert home_page.in_settings_page() is True
 
-    assert 1 == 1
+        # Settings page testing
+        settings_page = CovidWatchSettingsPage(driver)
+        settings_page.yes_notify()
+        # TODO: make sure we are notifying
+        settings_page.no_notify()
+        # TODO: make sure we are not notifying
+        settings_page.goto_seen_tags()
+        assert settings_page.in_home_page() is True
+
+def test_n_devices(drivers):
+
+    pass

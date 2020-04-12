@@ -4,47 +4,56 @@ This module contains shared fixtures for CovidWatch App testing.
 
 import json
 import pytest
-
+import os
+import time
 from appium import webdriver
+import subprocess
+import signal
 
-CONFIG_PATH = './config.json'
-APPIUM_SERVER_URL = "http://localhost:4723/wd/hub"
-# DEFAULT_WAIT_TIME = 10
-# SUPPORTED_BROWSERS = ['chrome', 'firefox']
-#
-#
+from appium.webdriver.appium_service import AppiumService
+
+# Globals
+CONFIG_PATH = 'config'
+APPIUM_SERVER_URL = "http://localhost:{}/wd/hub"
+
 @pytest.fixture(scope='session')
 def config():
-    # Read the JSON config file and returns it as a parsed dict
-    with open(CONFIG_PATH) as config_file:
-        data = json.load(config_file)
-    return data
-#
-#
-# @pytest.fixture(scope='session')
-# def config_browser(config):
-#     # Validate and return the browser choice from the config data
-#     if 'browser' not in config:
-#         raise Exception('The config file does not contain "browser"')
-#     elif config['browser'] not in SUPPORTED_BROWSERS:
-#         raise Exception(f'"{config["browser"]}" is not a supported browser')
-#     return config['browser']
-#
-#
-# @pytest.fixture(scope='session')
-# def config_wait_time(config):
-#     # Validate and return the wait time from the config data
-#     return config['wait_time'] if 'wait_time' in config else DEFAULT_WAIT_TIME
+    # Read all JSON config files in directory and return it as dict of dicts
+    config_d = {}
+    for fn in os.listdir(CONFIG_PATH):
+        # Current pattern checking is "config_" is start of file and ".json" is end of file
+        if fn.endswith(".json") and fn[0:7].lower() in "config_":
+            with open(os.path.join(CONFIG_PATH, fn)) as config_file:
+                data = json.load(config_file)
+            config_d[fn.replace(".json", "").replace("config_", "")] = data
+    return config_d
 
 
 @pytest.fixture
-def driver(config):
+def drivers(config):
 
-    # Initialize appium driver
-    phonedriver = webdriver.Remote(APPIUM_SERVER_URL, config)
+    # Initialize one appium server per device
+    # appium_service = AppiumService()
+    # appium_service.start(args=['--address', 'localhost', '-p', "4723"])
+
+    _drivers = {}
+    _cmd_windows = []
+    for port_adder, device in enumerate(config.keys()):
+        _cmd_windows.append(subprocess.Popen("cmd.exe /k appium -a 0.0.0.0 -p {}".format(4723 + port_adder),
+                                             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP, close_fds=True))
+        # Wait for servers to initialize
+        time.sleep(5)
+        # Start automation service
+        _drivers[device] = webdriver.Remote(APPIUM_SERVER_URL.format(4723 + port_adder), config[device])
 
     # Return the driver object at the end of setup
-    yield phonedriver
+    yield _drivers
 
-    # For cleanup, quit the driver
-    phonedriver.quit()
+    # For cleanup, quit the driver and kill subprocesses
+    for device in _drivers.keys():
+        _drivers[device].quit()
+    for cmd in _cmd_windows:
+        cmd.send_signal(signal.CTRL_BREAK_EVENT)
+        cmd.kill()
+
+    # appium_service.stop()

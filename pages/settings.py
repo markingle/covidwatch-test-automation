@@ -30,7 +30,6 @@ class CovidWatchSettingsPage:
             )))
 
     def no_notify(self):
-
         self.no_button.click()
 
     def yes_notify(self):
@@ -38,3 +37,11 @@ class CovidWatchSettingsPage:
 
     def goto_seen_tags(self):
         self.seen_tags_button.click()
+
+    def in_home_page(self):
+        # Make sure "START" button exists
+        start_button = WebDriverWait(self.driver, 5).until(
+            EC.visibility_of_element_located((
+                MobileBy.ID, "org.covidwatch.tags.android:id/start_logging"
+            )))
+        return start_button.is_displayed()

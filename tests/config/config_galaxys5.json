@@ -1,6 +1,7 @@
 {
   "platformName": "android",
-  "deviceName": "FUH0216808000685",
+  "deviceName": "e42947f9",
+  "udid": "e42947f9",
   "appPackage": "org.covidwatch.tags.android",
   "appActivity": "org.covidwatch.android.MainActivity"
 }
