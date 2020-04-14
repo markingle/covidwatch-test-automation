@@ -13,3 +13,6 @@ gen
 
 # User files
 ./tests/user_configs
+
+# Experimentation files
+sandbox.py

@@ -19,6 +19,7 @@ APPIUM_SERVER_URL = "http://localhost:{}/wd/hub"
 @pytest.fixture(scope='session')
 def config():
     # Read all JSON config files in directory and return it as dict of dicts
+    # TODO: This seems sort of cloodgy... Replace with something cleaner
     config_d = {}
     for fn in os.listdir(CONFIG_PATH):
         # Current pattern checking is "config_" is start of file and ".json" is end of file
@@ -32,6 +33,7 @@ def config():
 @pytest.fixture
 def drivers(config):
 
+    # TODO: Get appium service running somehow, possibly switch languages to NodeJS...
     # Initialize one appium server per device
     # appium_service = AppiumService()
     # appium_service.start(args=['--address', 'localhost', '-p', "4723"])

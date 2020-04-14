@@ -1,0 +1,7 @@
+{
+  "platformName": "android",
+  "deviceName": "LGUS998d00feeb9",
+  "udid": "LGUS998d00feeb9",
+  "appPackage": "org.covidwatch.tags.android",
+  "appActivity": "org.covidwatch.android.MainActivity"
+}

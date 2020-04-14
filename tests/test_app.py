@@ -35,6 +35,20 @@ def test_single_device(drivers):
         settings_page.goto_seen_tags()
         assert settings_page.in_home_page() is True
 
+
 def test_n_devices(drivers):
 
-    pass
+    # Accept location permissions and start logging on all devices
+    home_pages = {}
+    for device in drivers.keys():
+        home_pages[device] = CovidWatchHomePage(drivers[device])
+        home_pages[device].accept_location_permissions()
+        home_pages[device].start_logging()
+        assert home_pages[device].in_logging_state() is True
+
+    # Wait for each device to recognize each other
+    time.sleep(5)
+
+    # Check for every device that it can see every other device
+    for device in drivers.keys():
+        pass
